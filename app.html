@@ -44,11 +44,22 @@
 				<header id="header">
 					<img src="Main_home.png" alt="">
 					<div>
-						<h2>Chat with Vincent Porter</h2>
-						<h3>already 1902 messages</h3>
+						<h2>Chat with UnKnown User</h2>
+						<h3>hello World!</h3>
 					</div>
 				</header>
 				<ul id="chat">
+					<li class="you">
+						<div class="entete">
+							<span class="status green"></span>
+							<h2>System</h2>
+							<h3>Today</h3>
+						</div>
+						<div class="triangle"></div>
+						<div class="message">
+							To start an anonymous chat, select the channel you want, enter your name, and Press Enter!
+						</div>
+					</li>
 				</ul>
 				<footer id="user_com">
 					<textarea id="input" placeholder="Type your message"></textarea>
@@ -83,6 +94,8 @@
 				var string = text_box.value;
 				socket.emit('chat message',channel_status,name,string);
 				text_box.value = '';
+
+				add_msg(name,string,'me');
 			}
 
 			function call_moved(e,name){
@@ -157,10 +170,10 @@
 			
 			});
 
-			socket.on('chat message', function(name,msg) {
+			function add_msg(name,msg,caller){
 
 				var item = document.createElement('li');
-				item.classList.add('you');
+				item.classList.add(caller);
 				
 				var div_user = document.createElement('div');
 				div_user.classList.add('entete');
@@ -194,86 +207,26 @@
 
 				chat.appendChild(item);
 				window.scrollTo(0, document.body.scrollHeight);
+
+			}
+
+			socket.on('chat message', function(name_1,msg) {
+
+				if(name != name_1){
+					add_msg(name_1,msg,'you');
+				}
+
 			});
 
 			socket.on('leave_room', function(num,name) {
 
-				var item = document.createElement('li');
-				item.classList.add('you');
-
-				var div_user = document.createElement('div');
-				div_user.classList.add('entete');
-
-				var div_mid = document.createElement('div');
-				div_mid.classList.add("triangle");
-
-				var div_msg = document.createElement('div');
-				div_msg.classList.add("message");
-				var text3 = document.createTextNode(name + 'leaved');
-				div_msg.appendChild(text3);
-
-				var span = document.createElement('span');
-				span.classList.add("status_green")
-
-				var h3 = document.createElement('h3');
-				var text1 = document.createTextNode("NN:NN NN NN.NN.NN");
-				h3.appendChild(text1);
-
-				var h2 = document.createElement('h2');
-				var text2 = document.createTextNode(name);
-				h2.appendChild(text2);
-
-				div_user.appendChild(span);
-				div_user.appendChild(h2);
-				div_user.appendChild(h3);
-
-				item.appendChild(div_user);
-				item.appendChild(div_mid);
-				item.appendChild(div_msg);
-
-				chat.appendChild(item);
-				window.scrollTo(0, document.body.scrollHeight);
+				add_msg(name,name+' leave_room','you');
 			
 			});
 
 			socket.on('join_room', function(num,name) {
 
-				console.log('join');
-				var item = document.createElement('li');
-				item.classList.add('you');
-
-				var div_user = document.createElement('div');
-				div_user.classList.add('entete');
-
-				var div_mid = document.createElement('div');
-				div_mid.classList.add("triangle");
-
-				var div_msg = document.createElement('div');
-				div_msg.classList.add("message");
-				var text3 = document.createTextNode(name + 'joined');
-				div_msg.appendChild(text3);
-
-				var span = document.createElement('span');
-				span.classList.add("status_green")
-
-				var h3 = document.createElement('h3');
-				var text1 = document.createTextNode("NN:NN NN NN.NN.NN");
-				h3.appendChild(text1);
-
-				var h2 = document.createElement('h2');
-				var text2 = document.createTextNode(name);
-				h2.appendChild(text2);
-
-				div_user.appendChild(span);
-				div_user.appendChild(h2);
-				div_user.appendChild(h3);
-
-				item.appendChild(div_user);
-				item.appendChild(div_mid);
-				item.appendChild(div_msg);
-
-				chat.appendChild(item);
-				window.scrollTo(0, document.body.scrollHeight);
+				add_msg(name,name+' join_room','you');
 
 			});
 
