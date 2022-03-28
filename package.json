@@ -1,0 +1,26 @@
+{
+  "name": "socket.caht.extension",
+  "version": "0.0.1",
+  "description": "my first socket-chat test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m4a1carbin4/Node.js_Socket.io.git"
+  },
+  "keywords": [
+    "Socket.io"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/m4a1carbin4/Node.js_Socket.io/issues"
+  },
+  "homepage": "https://github.com/m4a1carbin4/Node.js_Socket.io#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "socket.io": "^4.4.1"
+  }
+}

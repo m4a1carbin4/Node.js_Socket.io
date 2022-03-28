@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<Title>Socket IO My Chat program</Title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="container">
+			<aside>
+				<ul id="channel">
+					<li id="main">
+						<img src="Main_home.png" alt="">
+						<div>
+							<h2>Main_Channel</h2>
+							<h3>
+								<span class="status orange"></span>
+								<textarea id="main_name" placeholder="Type your name"></textarea>
+							</h3>
+						</div>
+					</li>
+					<li id="sub1">
+						<img src="Main_home.png" alt="">
+						<div>
+							<h2>sub_channel 1</h2>
+							<h3>
+								<span class="status orange"></span>
+								<textarea id="sub1_name" placeholder="Type your name"></textarea>
+							</h3>
+						</div>
+					</li>
+					<li id="sub2">
+						<img src="Main_home.png" alt="">
+						<div>
+							<h2>sub_channel 2</h2>
+							<h3>
+								<span class="status orange"></span>
+								<textarea id="sub2_name" placeholder="Type your name"></textarea>
+							</h3>
+						</div>
+					</li>
+				</ul>
+			</aside>
+			<main>
+				<header id="header">
+					<img src="Main_home.png" alt="">
+					<div>
+						<h2>Chat with Vincent Porter</h2>
+						<h3>already 1902 messages</h3>
+					</div>
+				</header>
+				<ul id="chat">
+				</ul>
+				<footer id="user_com">
+					<textarea id="input" placeholder="Type your message"></textarea>
+					<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_picture.png" alt="">
+					<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/1940306/ico_file.png" alt="">
+					<a href="#" id="send">Send</a>
+				</footer>
+			</main>
+		</div>
+		<script src="/socket.io/socket.io.js"></script>  
+		<script>
+
+
+			var channel_status = -1;
+			var socket = io();
+			const rooms = ['main','sub1','sub2'];
+			var name = '';
+
+			var send = document.getElementById('send');
+			var chat = document.getElementById('chat');
+			var text_box = document.getElementById('input');
+			var main = document.getElementById('main_name');
+			var sub1 = document.getElementById('sub1_name');
+			var sub2 = document.getElementById('sub2_name');
+
+			function call_send(){
+
+				if(channel_status == -1){
+					return;
+				}
+
+				var string = text_box.value;
+				socket.emit('chat message',channel_status,name,string);
+				text_box.value = '';
+			}
+
+			function call_moved(e,name){
+				
+				console.log("moved call " + name + e);
+
+				if(channel_status != -1){
+					socket.emit('leave_room',channel_status,name);
+				}
+				
+				socket.emit('join_room',e,name);
+				channel_status = e;
+
+				console.log("end " + channel_status + name);
+
+			}
+
+			send.addEventListener('click', function(e) {
+				e.preventDefault();
+				if (text_box.value) {
+					call_send();
+				}
+			});
+
+			text_box.addEventListener('keydown',function(e){
+				if(e.keyCode == 13){
+					if (text_box.value) {
+						call_send();
+					}
+				}
+			});
+
+			main.addEventListener('keydown',function(e){
+
+				if(e.keyCode == 13){
+					if(channel_status !=0 && main.value){
+						name = main.value;
+						call_moved(0,name);
+						while (chat.hasChildNodes()) {
+  							chat.removeChild(chat.firstChild);
+						}
+					}
+				}
+
+			});
+
+			sub1.addEventListener('keydown',function(e){
+
+				if(e.keyCode == 13){
+					if(channel_status !=1 && sub1.value){
+						name = sub1.value;
+						call_moved(1,name);
+						while (chat.hasChildNodes()) {
+  							chat.removeChild(chat.firstChild);
+						}
+					}
+				}
+	
+			});
+
+			sub2.addEventListener('keydown',function(e){
+
+				if(e.keyCode == 13){
+					if(channel_status !=2 && sub2.value){
+						name = sub2.value;
+						call_moved(2,name);
+						while (chat.hasChildNodes()) {
+  							chat.removeChild(chat.firstChild);
+						}
+					}
+				}
+			
+			});
+
+			socket.on('chat message', function(name,msg) {
+
+				var item = document.createElement('li');
+				item.classList.add('you');
+				
+				var div_user = document.createElement('div');
+				div_user.classList.add('entete');
+
+				var div_mid = document.createElement('div');
+				div_mid.classList.add("triangle");
+
+				var div_msg = document.createElement('div');
+				div_msg.classList.add("message");
+				var text3 = document.createTextNode(msg);
+				div_msg.appendChild(text3);
+
+				var span = document.createElement('span');
+				span.classList.add("status_green")
+
+				var h3 = document.createElement('h3');
+				var text1 = document.createTextNode("NN:NN NN NN.NN.NN");
+				h3.appendChild(text1);
+
+				var h2 = document.createElement('h2');
+				var text2 = document.createTextNode(name);
+				h2.appendChild(text2);
+
+				div_user.appendChild(span);
+				div_user.appendChild(h2);
+				div_user.appendChild(h3);
+
+				item.appendChild(div_user);
+				item.appendChild(div_mid);
+				item.appendChild(div_msg);
+
+				chat.appendChild(item);
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			socket.on('leave_room', function(num,name) {
+
+				var item = document.createElement('li');
+				item.classList.add('you');
+
+				var div_user = document.createElement('div');
+				div_user.classList.add('entete');
+
+				var div_mid = document.createElement('div');
+				div_mid.classList.add("triangle");
+
+				var div_msg = document.createElement('div');
+				div_msg.classList.add("message");
+				var text3 = document.createTextNode(name + 'leaved');
+				div_msg.appendChild(text3);
+
+				var span = document.createElement('span');
+				span.classList.add("status_green")
+
+				var h3 = document.createElement('h3');
+				var text1 = document.createTextNode("NN:NN NN NN.NN.NN");
+				h3.appendChild(text1);
+
+				var h2 = document.createElement('h2');
+				var text2 = document.createTextNode(name);
+				h2.appendChild(text2);
+
+				div_user.appendChild(span);
+				div_user.appendChild(h2);
+				div_user.appendChild(h3);
+
+				item.appendChild(div_user);
+				item.appendChild(div_mid);
+				item.appendChild(div_msg);
+
+				chat.appendChild(item);
+				window.scrollTo(0, document.body.scrollHeight);
+			
+			});
+
+			socket.on('join_room', function(num,name) {
+
+				console.log('join');
+				var item = document.createElement('li');
+				item.classList.add('you');
+
+				var div_user = document.createElement('div');
+				div_user.classList.add('entete');
+
+				var div_mid = document.createElement('div');
+				div_mid.classList.add("triangle");
+
+				var div_msg = document.createElement('div');
+				div_msg.classList.add("message");
+				var text3 = document.createTextNode(name + 'joined');
+				div_msg.appendChild(text3);
+
+				var span = document.createElement('span');
+				span.classList.add("status_green")
+
+				var h3 = document.createElement('h3');
+				var text1 = document.createTextNode("NN:NN NN NN.NN.NN");
+				h3.appendChild(text1);
+
+				var h2 = document.createElement('h2');
+				var text2 = document.createTextNode(name);
+				h2.appendChild(text2);
+
+				div_user.appendChild(span);
+				div_user.appendChild(h2);
+				div_user.appendChild(h3);
+
+				item.appendChild(div_user);
+				item.appendChild(div_mid);
+				item.appendChild(div_msg);
+
+				chat.appendChild(item);
+				window.scrollTo(0, document.body.scrollHeight);
+
+			});
+
+
+		</script>
+	</body>
+</html>
