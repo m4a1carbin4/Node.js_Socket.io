@@ -21,6 +21,7 @@
   "homepage": "https://github.com/m4a1carbin4/Node.js_Socket.io#readme",
   "dependencies": {
     "express": "^4.17.3",
+    "mongoose": "^6.3.1",
     "socket.io": "^4.4.1"
   }
 }
